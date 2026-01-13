@@ -1,0 +1,37 @@
+~$ ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host noprefixroute 
+       valid_lft forever preferred_lft forever
+2: enp3s0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 38:2c:4a:8c:5c:f2 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.130.53/16 brd 192.168.255.255 scope global dynamic noprefixroute enp3s0
+       valid_lft 596229sec preferred_lft 596229sec
+    inet6 fe80::f603:49e2:63f9:6e11/64 scope link noprefixroute 
+       valid_lft forever preferred_lft forever
+(...)
+4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN group default 
+    link/ether 92:1d:b7:b9:db:96 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+       valid_lft forever preferred_lft forever
+5: demo-oai: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+    link/ether d2:c0:c5:01:f5:81 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.70.1/24 brd 192.168.70.255 scope global demo-oai
+       valid_lft forever preferred_lft forever
+    inet6 fe80::d0c0:c5ff:fe01:f581/64 scope link 
+       valid_lft forever preferred_lft forever
+6: cn5g-core: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
+    link/ether fe:de:03:1b:74:1f brd ff:ff:ff:ff:ff:ff
+    inet 192.168.73.1/24 brd 192.168.73.255 scope global cn5g-core
+       valid_lft forever preferred_lft forever
+    inet6 fe80::fcde:3ff:fe1b:741f/64 scope link 
+       valid_lft forever preferred_lft forever
+(...)
+25: oaitun_ue1: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UNKNOWN group default qlen 500
+    link/none 
+    inet 12.2.1.2/24 scope global oaitun_ue1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::8621:2fdf:cc71:d2fc/64 scope link stable-privacy 
+       valid_lft forever preferred_lft forever
