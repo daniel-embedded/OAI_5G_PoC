@@ -1,0 +1,140 @@
+services:
+    ueransim:
+        container_name: ueransim
+        image: ueransim:latest
+        privileged: true
+        environment:
+            # GNB Config Parameters
+            - MCC=208
+            - MNC=95
+            - NCI=0x000000010
+            - TAC=0xa000
+            - LINK_IP=192.168.70.152
+            - NGAP_IP=192.168.70.152
+            - GTP_IP=192.168.70.152
+            - NGAP_PEER_IP=192.168.70.138
+            - SST=1
+            - SD=000001
+            - SST_0=2
+            - SD_0=000002
+            - SST_1=3
+            - SD_1=000003
+#            - SST_2=4
+#            - SD_2=000004
+            - IGNORE_STREAM_IDS=true
+            # UE Config Parameters
+            - NUMBER_OF_UE=8
+            - IMSI=208950000000031
+            - KEY=0C0A34601D4F07677303652C0462535B
+            - OP=63bfa50ee6523365ff14c1f45f88737d
+            - OP_TYPE=OPC
+            - AMF_VALUE=8000
+            - IMEI=356938035643803
+            - IMEI_SV=0035609204079514
+            - GNB_IP_ADDRESS=192.168.70.152
+            - PDU_TYPE=IPv4
+            - APN=default
+            - SST_R=1 #Requested N-SSAI
+            - SD_R=000001
+            - SST_C=2 
+            - SD_C=000002
+            - SST_D=3
+            - SD_D=000003
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.152
+        healthcheck:
+            test: /bin/bash -c "ifconfig uesimtun0"
+            interval: 10s
+            timeout: 5s
+            retries: 5
+#        deploy:
+#            resources:
+#                limits:
+#                    cpus: '1.5'      # Restricts the container to 1.5 CPU cores max
+#                    memory: 512M     # Kills the container if it tries to use more than 512 Megabytes of RAM
+#                reservations:
+#                    cpus: '0.25'     # Guarantees at least 1/4 of a core is always available for this container
+#                    memory: 128M     # Guarantees 128MB of RAM is always available
+#    oai-gnb:
+#        image: oaisoftwarealliance/oai-gnb:develop
+#        privileged: true
+#        container_name: rfsim5g-oai-gnb
+#        environment: 
+#            RFSIMULATOR: server
+#            USE_ADDITIONAL_OPTIONS: -E --rfsim --log_config.global_log_options level,nocolor,time
+#        volumes:
+#            - ./ran-conf/gnb.conf:/opt/oai-gnb/etc/gnb.conf
+#        networks:
+#            public_net:
+#                ipv4_address: 192.168.70.153
+#        healthcheck:
+#            test: /bin/bash -c "pgrep nr-softmodem"
+#            interval: 10s
+#            timeout: 5s
+#            retries: 5
+#    oai-nr-ue1:
+#        image: oaisoftwarealliance/oai-nr-ue:develop
+#        privileged: true
+#        container_name: rfsim5g-oai-nr-ue1
+#        environment: 
+#            RFSIMULATOR: 192.168.70.153
+#            USE_ADDITIONAL_OPTIONS: -E --rfsim -r 106 --numerology 1 -C 3619200000 --log_config.global_log_options level,nocolor,time
+#        depends_on:
+#            - oai-gnb
+#        volumes:
+#            - ./ran-conf/nr-ue.conf:/opt/oai-nr-ue/etc/nr-ue.conf
+#        networks:
+#            public_net:
+#                ipv4_address: 192.168.70.154
+#        healthcheck:
+#            test: /bin/bash -c "pgrep nr-uesoftmodem"
+#            interval: 10s
+#            timeout: 5s
+#            retries: 5
+#    gnbsim:
+#        container_name: gnbsim
+#        image: gnbsim:latest
+#        privileged: true
+#        environment:
+#            - GNB_NAME=gnbsim-node-2
+#            - MCC=208
+#            - MNC=95
+#            - GNBID=5
+#            - TAC=0x00a000
+#            - SST=130
+#            - SD=000082
+#            - PagingDRX=v32
+#            - RANUENGAPID=0 
+#            - IMEISV=35609204079514
+#            - MSIN=0000000037
+#            - RoutingIndicator=1234
+#            - ProtectionScheme=null
+#            - KEY=0C0A34601D4F07677303652C0462535B
+#            - OPc=63bfa50ee6523365ff14c1f45f88737d
+#            - DNN=oai.ipv4
+#            - URL=http://www.asnt.org:8080/
+#            - NRCellID=1
+#            - USE_FQDN=no
+#            - DEREG_AFTER=0
+#            - NGAPPeerAddr=192.168.70.138
+#            - GTPuLocalAddr=192.168.72.156
+#            - GTPuIFname=eth0
+#        networks:
+#            public_net:
+#                ipv4_address: 192.168.70.156
+#            public_net_access:
+#                ipv4_address: 192.168.72.156
+#        healthcheck:
+#            test: /bin/bash -c "ip address show dev gtp-gnb"
+#            interval: 10s
+#            timeout: 5s
+#            retries: 5
+networks:
+    public_net:
+        name: demo-oai-public-net
+        external: True
+    public_net_access:
+        name: oai-public-access
+        #name: public_net_access
+        external: True

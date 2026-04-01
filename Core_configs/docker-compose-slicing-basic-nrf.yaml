@@ -1,8 +1,7 @@
-#version: '3.8'
 services:
     mysql:
         container_name: "mysql"
-        image: mysql:8.0
+        image: mysql:9.0
         volumes:
             - ./database/oai_db2.sql:/docker-entrypoint-initdb.d/oai_db.sql
             - ./healthscripts/mysql-healthcheck2.sh:/tmp/mysql-healthcheck.sh
@@ -22,7 +21,7 @@ services:
                 ipv4_address: 192.168.70.131
     oai-nssf:
         container_name: "oai-nssf"
-        image: oaisoftwarealliance/oai-nssf:v2.1.0
+        image: oaisoftwarealliance/oai-nssf:develop
         expose:
             - 80/tcp
             - 8080/tcp
@@ -35,14 +34,12 @@ services:
         cap_drop:
             - ALL
         privileged: true
-        environment:
-            - TZ=America/Recife
         networks:
             public_net:
                 ipv4_address: 192.168.70.132
     oai_udr:
         container_name: "oai-udr"
-        image: oaisoftwarealliance/oai-udr:v2.1.0
+        image: oaisoftwarealliance/oai-udr:develop
         expose:
             - 80/tcp
             - 8080/tcp
@@ -50,14 +47,12 @@ services:
             - ./conf/slicing_base_config.yaml:/openair-udr/etc/config.yaml
         depends_on:
             - mysql
-        environment:
-            - TZ=America/Recife
         networks:
             public_net:
                 ipv4_address: 192.168.70.133
     oai_udm:
         container_name: "oai-udm"
-        image: oaisoftwarealliance/oai-udm:v2.1.0
+        image: oaisoftwarealliance/oai-udm:develop
         expose:
             - 80/tcp
             - 8080/tcp
@@ -65,16 +60,12 @@ services:
             - ./conf/slicing_base_config.yaml:/openair-udm/etc/config.yaml
         depends_on:
             - oai_udr
-        environment:
-            - TZ=America/Recife
-            - USE_FQDN_DNS=yes
-            - REGISTER_NRF_FQDN=oai-nrf-slice1
         networks:
             public_net:
                 ipv4_address: 192.168.70.134
     oai_ausf:
         container_name: "oai-ausf"
-        image: oaisoftwarealliance/oai-ausf:v2.1.0
+        image: oaisoftwarealliance/oai-ausf:develop
         expose:
             - 80/tcp
             - 8080/tcp
@@ -82,53 +73,34 @@ services:
             - ./conf/slicing_base_config.yaml:/openair-ausf/etc/config.yaml
         depends_on:
             - oai_udm
-        environment:
-            - TZ=America/Recife
-            - USE_FQDN_DNS=yes
-            - REGISTER_NRF_FQDN=oai-nrf-slice1
         networks:
             public_net:
                 ipv4_address: 192.168.70.135
-#    oai_nrf_slice12:	#ORIGINAL ONE REPLACED BY oai_nrf_slice1 AND oai_nrf_slice2 BELOW
-#        container_name: "oai-nrf-slice12"
-#        image: oaisoftwarealliance/oai-nrf:v2.1.0
-#        expose:
-#            - 80/tcp
-#            - 8080/tcp
-#        volumes:
-#            - ./conf/slicing_slice1_config.yaml:/openair-nrf/etc/config.yaml
-#        networks:
-#            public_net:
-#                ipv4_address: 192.168.70.136
     oai_nrf_slice1:
         container_name: "oai-nrf-slice1"
-        image: oaisoftwarealliance/oai-nrf:v2.1.0
+        image: oaisoftwarealliance/oai-nrf:develop
         expose:
             - 80/tcp
             - 8080/tcp
         volumes:
             - ./conf/slicing_slice1_config.yaml:/openair-nrf/etc/config.yaml
-        environment:
-            - TZ=America/Recife
         networks:
             public_net:
                 ipv4_address: 192.168.70.136
     oai_nrf_slice2:
         container_name: "oai-nrf-slice2"
-        image: oaisoftwarealliance/oai-nrf:v2.1.0
+        image: oaisoftwarealliance/oai-nrf:develop
         expose:
             - 80/tcp
             - 8080/tcp
         volumes:
             - ./conf/slicing_slice2_config.yaml:/openair-nrf/etc/config.yaml
-        environment:
-            - TZ=America/Recife
         networks:
             public_net:
                 ipv4_address: 192.168.70.146
 #    oai_nrf_slice3:
 #        container_name: "oai-nrf-slice3"
-#        image: oaisoftwarealliance/oai-nrf:v2.1.0
+#        image: oaisoftwarealliance/oai-nrf:develop
 #        expose:
 #            - 80/tcp
 #            - 8080/tcp
@@ -139,17 +111,13 @@ services:
 #                ipv4_address: 192.168.70.137
     oai_amf:
         container_name: "oai-amf"
-        image: oaisoftwarealliance/oai-amf:v2.1.0
+        image: oaisoftwarealliance/oai-amf:develop
         expose:
             - 80/tcp
             - 8080/tcp
             - 38412/sctp
         volumes:
             - ./conf/slicing_base_config.yaml:/openair-amf/etc/config.yaml
-        environment:
-            # Add NRF list for multi-NRF deployment
-            - TZ=America/Recife
-            - NRF_IPV4_ADDRESSES="192.168.70.136,192.168.70.146"
         depends_on:
             - oai_nrf_slice1
             - oai_nrf_slice2
@@ -160,15 +128,13 @@ services:
                 ipv4_address: 192.168.70.138
     oai_smf_slice1:
         container_name: "oai-smf-slice1"
-        image: oaisoftwarealliance/oai-smf:v2.1.0
+        image: oaisoftwarealliance/oai-smf:develop
         expose:
             - 80/tcp
             - 8080/tcp
             - 8805/udp
         volumes:
             - ./conf/slicing_slice1_config.yaml:/openair-smf/etc/config.yaml
-        environment:
-            - TZ=America/Recife
         depends_on:
             - oai_amf
             - oai_nrf_slice1
@@ -177,15 +143,13 @@ services:
                 ipv4_address: 192.168.70.139
     oai_smf_slice2:
         container_name: "oai-smf-slice2"
-        image: oaisoftwarealliance/oai-smf:v2.1.0
+        image: oaisoftwarealliance/oai-smf:develop
         expose:
             - 80/tcp
             - 8080/tcp
             - 8805/udp
         volumes:
             - ./conf/slicing_slice2_config.yaml:/openair-smf/etc/config.yaml
-        environment:
-            - TZ=America/Recife
         depends_on:
             - oai_amf
             - oai_nrf_slice2
@@ -194,7 +158,7 @@ services:
                 ipv4_address: 192.168.70.140
 #    oai_smf_slice3:
 #        container_name: "oai-smf-slice3"
-#        image: oaisoftwarealliance/oai-smf:v2.1.0
+#        image: oaisoftwarealliance/oai-smf:develop
 #        expose:
 #            - 80/tcp
 #            - 8080/tcp
@@ -211,7 +175,7 @@ services:
 #                ipv4_address: 192.168.70.141
     oai_upf_slice1:
         container_name: "oai-upf-slice1"
-        image: oaisoftwarealliance/oai-upf:v2.1.0
+        image: oaisoftwarealliance/oai-upf:develop
         expose:
             - 2152/udp
             - 8805/udp
@@ -234,7 +198,7 @@ services:
                 ipv4_address: 192.168.70.142
     oai_upf_slice2:
         container_name: "oai-upf-slice2"
-        image: oaisoftwarealliance/oai-upf:v2.1.0
+        image: oaisoftwarealliance/oai-upf:develop
         expose:
             - 2152/udp
             - 8805/udp
@@ -255,6 +219,7 @@ services:
         networks:
             public_net:
                 ipv4_address: 192.168.70.143
+
 #    vpp_upf_slice3:
 #        container_name: "vpp-upf-slice3"
 #        image: oaisoftwarealliance/oai-upf-vpp:v2.1.0
@@ -299,6 +264,7 @@ services:
 #                ipv4_address: 192.168.72.144
 #            public_net_core:
 #                ipv4_address: 192.168.73.144
+
     oai_ext_dn:
         image: oaisoftwarealliance/trf-gen-cn5g:latest
         privileged: true
@@ -306,12 +272,9 @@ services:
         container_name: oai-ext-dn
         entrypoint: /bin/bash -c \
               "iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;"\
-              "ip route add 12.2.1.0/24 via 192.168.70.142 dev eth0;"\
-              "ip route add 12.1.1.0/24 via 192.168.70.143 dev eth0; ip route; sleep infinity"
-#	      "iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE;"\
-#              "ip route add 12.2.1.2/32 via 192.168.70.142 dev eth0;"\
-#              "ip route add 12.1.1.130/32 via 192.168.70.143 dev eth0;"\
-#              "ip route add 12.1.1.2/32 via 192.168.73.201 dev eth1; ip route; sleep infinity"
+              "ip route add 12.2.1.2/32 via 192.168.70.142 dev eth0;"\
+              "ip route add 12.1.1.130/32 via 192.168.70.143 dev eth0;"\
+              "ip route add 12.1.1.2/32 via 192.168.73.201 dev eth1; ip route; sleep infinity"
         command: ["/bin/bash", "-c", "trap : SIGTERM SIGINT; sleep infinity & wait"]
         healthcheck:
             test: /bin/bash -c "iptables -L -t nat | grep MASQUERADE"
@@ -334,6 +297,7 @@ networks:
             com.docker.network.bridge.name: "demo-oai"
     public_net_access:
         name: oai-public-access
+        #name: public_net_access
         ipam:
             config:
                 - subnet: 192.168.72.0/24

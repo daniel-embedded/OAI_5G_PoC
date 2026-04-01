@@ -1,41 +1,34 @@
-# OAI 5G SA Network Slicing Emulation (RF Simulator)
+# OAI 5G Network Slicing Emulation
 
-This repository contains the configuration and setup instructions for emulating a 5G Standalone (SA) network with Network Slicing using OpenAirInterface (OAI).
+This repository contains a Proof of Concept (PoC) for emulating a 5G Service-Based Architecture (SBA) with strict network slicing. It is designed to gather quantitative control-plane metrics and evaluate dynamic PDU session transitions, providing a reproducible testbed for comparing OpenAirInterface (OAI) implementation overhead against Open5GS architectures for IEEE SMC 2026 research.
 
-The setup utilizes Docker for the 5G Core Network (CN5G) and runs the gNB and nr-UE (User Equipment) directly on the host machine using the RF Simulator (no SDR hardware required).
+The baseline deployment and core configuration files in this project originated from the official OAI tutorial: [DEPLOY_SA5G_SLICING.md](https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed/-/blob/develop/docs/DEPLOY_SA5G_SLICING.md).
 
 ## Table of Contents
 
-1.  [Architecture](#architecture)
+1.  [Architecture Overview](#architecture-overview)
 2.  [Prerequisites](#prerequisites)
-3.  [Configuration & Fixes](#configuration-fixes)
-    * [Core Network](#core-network)
-    * [Database Schema](#database-schema)
-    * [UE Configuration](#ue-configuration)
-4.  [How to Run](#how-to-run)
-    * [Start the Core Network](#start-the-core-network)
-    * [Start the gNB](#start-the-gnb)
-    * [Start the UE](#start-the-ue)
-    * [Verify Traffic](#verify-traffic)
+3.  [Critical Configuration Changes](#critical-configuration-changes)
+    * [Database Schema Override](#database-schema-override)
+    * [UPF Hostname Resolution](#upf-hostname-resolution)
+    * [NSSF Discovery](#nssf-discovery)
+    * [UERANSIM APN Parameter](#ueransim-apn-parameter)
+4.  [Deployment Instructions](#deployment-instructions)
 5.  [File Structure](#file-structure)
 6.  [Verification](#verification)
-7.  [Logs](#logs)
-8.  [Troubleshooting Tips](#troubleshooting-tips)
+7.  [Troubleshooting Tips](#troubleshooting-tips)
 
----
+## 1. Architecture Overview
 
-## 1. Architecture
+This testbed decouples the 5G Core from the Radio Access Network (RAN) and User Equipment (UE) to allow for precise control-plane stress testing. 
 
-This setup provides a basic yet complete 5G SA (Standalone) network emulation on a single Linux machine. Key features include:
-
-* **Core Network (Dockerized)**: OAI CN5G (v2.1.0 images).
-    Slice 1: SST=1, SD=1 (eMBB/Default)
-    Slice 2: SST=2, SD=2 (Custom/OAI)
-    Functions: AMF, SMF (x2), UPF (x2), NRF (x2), UDM, UDR, AUSF, NSSF.
-    Database: MySQL 8.0.
-* **RAN (Host Machine)**: OAI gNB (Monolithic).
-* **UE (Host Machine)**: OAI nr-uesoftmodem (RF Simulator).
-
+* **Core Network:** Deployed via `docker-compose-slicing-basic-nrf.yaml`. Features isolated Network Repository Functions (NRFs), Session Management Functions (SMFs), and User Plane Functions (UPFs) to enforce strict traffic separation.
+* **RAN & UEs:** Emulated using **UERANSIM**. To simplify the radio layer and isolate core metrics, this setup bypasses the `oai-gnb`, `oai-nr-ue`, and `gnbsim` containers. We exclusively run the `ueransim` service defined in `docker-compose-slicing-ransim.yaml`.
+* **Topology:** 1 simulated gNB serving 8 UEs (IMSIs `208950000000031` through `208950000000038`).
+* **Active Slices:**
+  * **Slice 1:** `SST: 1, SD: 000001` (DNN: `default`)
+  * **Slice 2:** `SST: 2, SD: 000002` (DNN: `oai`)
+  
 ## 2. Prerequisites
 
 * **Operating System**: Ubuntu 20.04 / 22.04 (Low-latency kernel recommended but not required for RFSim).
@@ -46,73 +39,68 @@ This setup provides a basic yet complete 5G SA (Standalone) network emulation on
 
 * **Software**: Docker & Docker Compose, OpenAirInterface repository (built for gNB and UE), and oai-cn5g-fed repository (for Core Network scripts).
 
-## 3. Configuration & Fixes
+## 3. Critical Configuration Changes
 
-This setup addresses several common integration issues between OAI components.
+To achieve multi-slice mobility for a single UE, several modifications were made to the default OAI tutorial files.
 
-### Core Network
+### 1. Database Schema Override (`oai_db2.sql`)
+By default, the OAI MySQL initialization script restricts UEs to a single data plane profile. To allow UEs to simultaneously connect to Slice 1 and Slice 2, the `PRIMARY KEY` constraint on the Session Management table must be removed from the blueprint prior to container initialization.
+* Commented out the `ALTER TABLE SessionManagementSubscriptionData ADD PRIMARY KEY` block at the bottom of the SQL dump.
+* Provisioned 8 UEs with multiple JSON profiles across both `AccessAndMobilitySubscriptionData` and `SessionManagementSubscriptionData`.
 
-Main file: docker-compose-slicing-basic-nrf.yaml
+### 2. UPF Hostname Resolution (`slicing_sliceX_config.yaml`)
+When duplicating the SMF/UPF YAML configurations for isolated slices, the generic `host: oai-upf` variable causes NXDOMAIN DNS failures on the N4 interface. 
+* Updated the NFs block in `slicing_slice1_config.yaml` to specifically target `host: oai-upf-slice1`.
+* Updated the NFs block in `slicing_slice2_config.yaml` to specifically target `host: oai-upf-slice2`.
 
-MySQL 8.0 Compatibility: The MySQL service command is forced to use legacy authentication:
-    command: --default-authentication-plugin=mysql_native_password
+### 3. NSSF Discovery (`nssf_slice_config.yaml`)
+To prevent the Access and Mobility Management Function (AMF) from timing out during SMF discovery, the `nrfId` and `nrfNfMgtUri` fields for Slices 1, 2, and 3 were updated to point directly to the active Docker IPv4 addresses (e.g., `192.168.70.136`, `192.168.70.146`) instead of unresolved FQDNs.
 
-NRF Routing: Common functions (UDM, AUSF) are explicitly configured to register with oai-nrf-slice1 via slicing_base_config.yaml to prevent discovery failures.
+### 4. UERANSIM APN Parameter (`docker-compose-slicing-ransim.yaml`)
+Ensure the UERANSIM environment variables use the legacy `- APN=default` flag instead of `DNN`. The `ueransim:latest` container entrypoint script will fatally crash if `APN` is missing from the compose file.
 
-Latency Tuning: AMF http_request_timeout increased to 5000 (ms) to prevent authentication timeouts under high CPU load.
+## 4. Deployment Instructions
+Navigate to your docker-compose directory.
 
-1.  **Add Open5GS repository and install:**
-    $ sudo add-apt-repository ppa:open5gs/latest
-    $ sudo apt update
-    $ sudo apt install open5gs
+**1. Clean previous environments**
+To ensure the database ingests the modified `oai_db2.sql` without primary key collisions, wipe any existing Docker volumes:
 
-2.  [cite_start]**Install Open5GS WebUI:** The WebUI facilitates UE subscription management and monitoring. [cite: 1]
-    $ sudo apt install open5gs-webui
-
-### Database Schema
-
-Main file: oai_db2.sql
-
-The default SQL dump has been modified to prevent ERROR 1062 (Duplicate entry) during initialization.
-    Fix: The PRIMARY KEY on SessionManagementSubscriptionData was replaced with a standard INDEX to allow multiple slice subscriptions for the same UE.
-
-### UE Configuration
-
-Main file: ue.conf
-
-S-NSSAI Matching: The Slice Differentiator (SD) is standardized to Hex format (0x1) in both the snssaiList (Registration) and pduSessions (Establishment) blocks to match the Core Network's expectations.
-
-PLMN: Configured for MCC=208, MNC=95 (Length=2).
-
-## 4. How to Run
-
-### Start the Core Network
-
-Navigate to your docker-compose directory:
-    # Clean up any stale state (Crucial for DB initialization)
     $ docker compose -f docker-compose-slicing-basic-nrf.yaml down -v
-    # Start the Core
+
+**2. Initialize the 5G Core**
+
     $ docker compose -f docker-compose-slicing-basic-nrf.yaml up -d
-    
-Verification: Wait 30-60 seconds. Check that MySQL is healthy and SMFs are registered:
-    $ docker ps | grep mysql  # Must be (healthy)
-    $ docker logs oai-smf-slice1 | grep "NF Update"
 
-### Start the gNB
+Wait approximately 15-20 seconds for the MySQL database to populate and the AMF to register with the isolated NRFs. It is important to ensure that the UDR function connected to the MySQL database:
+    $ docker logs oai-udr | grep "MySQL"
 
-Navigate to your openairinterface5g directory:
-    $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-softmodem \ -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.pci0.rfsim.conf \ --rfsim
+If not, restart both containers
+    $ docker restart oai-udr mysql
 
-### Start the UE
+**3. Launch the RAN and UEs**
+Bring up strictly the UERANSIM container to generate the gNB and 8 UEs.
+    $ docker compose -f docker-compose-slicing-ransim.yaml up -d ueransim
 
-In a separate terminal:
-    $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-uesoftmodem \ -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf \ -C 3619200000 --band 78 --rfsim
+Dynamic Slice Transitions & Testing
 
-### Verify Traffic
+By default, UERANSIM boots all 8 UEs and requests PDU sessions strictly on Slice 1. To investigate control-plane overhead during inter-slice mobility, you can manually trigger secondary PDU sessions using the nr-cli tool.
 
-Once the UE log shows PDU Session Establishment Accept and an IP (e.g., 12.2.1.2), test the connection:
-    # Ping Google DNS through the UE tunnel interface
-    $ ping -I oaitun_ue1 8.8.8.8
+Establish a connection to Slice 2 (DNN: oai)
+    $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"
+
+(Note: Watch the core logs for the T3580 timer to measure session establishment latency).
+
+Verify active sessions and multiple virtual TUN interfaces:
+    $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-list"
+    $ docker exec -it ueransim ifconfig
+
+Release the original Slice 1 connection:
+    $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-release 1"
+
+Batch Testing:
+To sequentially transition all 8 UEs to the secondary slice for load testing:
+
+    $ for i in {32..38}; do docker exec -it ueransim ./nr-cli imsi-2089500000000$i -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"; done
 
 ## 5. File Structure
 
@@ -134,33 +122,27 @@ Once the UE log shows PDU Session Establishment Accept and an IP (e.g., 12.2.1.2
 
 ├── RAN_UE_configs/
 
-    ├── gnb.sa.band78.fr1.106PRB.pci0.rfsim.conf
-    
-    ├── neighbour-config-rfsim.conf
-
-    └── ue.conf
+    └── docker-compose-slicing-ransim.yaml
 
 └── logs/
 
-    ├── docker_logs_oai_amf.log          # Example AMF logs for UE registration
+    ├── docker_logs_amf.log          # Example AMF logs for UE registration
     
-    ├── docker_logs_oai_smf-slice1.log   # Example SMF slice1 logs for PDU session setup
+    ├── docker_logs_smf-slice1.log   # Example SMF slice1 logs for PDU session setup
     
-    ├── docker_logs_oai_smf-slice2.log   # Example SMF slice2 logs for PDU session setup
+    ├── docker_logs_smf-slice2.log   # Example SMF slice2 logs for PDU session setup
     
-    ├── docker_logs_oai_upf-slice1.log   # Example UPF slice1 logs for UPF session creation
+    ├── docker_logs_upf-slice1.log   # Example UPF slice1 logs for UPF session creation
     
-    ├── docker_logs_oai_upf-slice2.log   # Example UPF slice2 logs for UPF session creation
+    ├── docker_logs_upf-slice2.log   # Example UPF slice2 logs for UPF session creation
     
-    ├── docker_logs_oai_nrf-slice1.log   # Example NRF slice1 logs for Network Functions catalog
+    ├── docker_logs_nrf-slice1.log   # Example NRF slice1 logs for Network Functions catalog
     
-    ├── docker_logs_oai_nrf-slice2.log   # Example NRF slice2 logs for Network Functions catalog
+    ├── docker_logs_nrf-slice2.log   # Example NRF slice2 logs for Network Functions catalog
     
-    ├── docker_logs_gnb_sa_band78_fr1_106PRB_pci0_rfsim.log          # Example gNB logs
+    ├── docker_logs_gnb_ue.log          # Example gNB and UE logs
     
-    ├── docker_logs_ue.log               # Example UE logs
-    
-    ├── docker_logs_oai_udr.log          # Example UDR logs for unified UE DataBase
+    ├── docker_logs_udr.log          # Example UDR logs for unified UE DataBase
     
     ├── docker_logs_mysql.log            # Example MySQL DataBase logs
     
@@ -178,18 +160,12 @@ Monitor Core Network Logs: Observe real-time logs for UE registration, PDU sessi
     $ docker logs oai-upf-slice2 -f   # For UPF slice2 logs
     $ docker logs oai-udr -f          # For UPF slice2 logs
     $ docker logs mysql -f            # For MySQL DataBase logs
-    $ # It is necessary to verify that the MySQL DataBase is healthy and then confirm that the UDR is connected to the MySQL DataBase.
-    $ # You can check other services like nrf, nssf, udm, ausf
 
-Check gNB and UE Logs: Verify gNB's NG Setup success and UE's successful registration and PDU session establishment available on the starting commands: 
-    $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-softmodem -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.pci0.rfsim.conf --rfsim
-    $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-uesoftmodem -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf -C 3619200000 --band 78 --rfsim
+It is necessary to verify that the MySQL DataBase is healthy and then confirm that the UDR is connected to the MySQL DataBase.
 
-## 7. Logs
+You can check other services like nrf, nssf, udm, ausf. Example log outputs demonstrating successful operation are included in the logs/ directory of this repository. These logs capture critical messages during network startup, UE registration, and PDU session establishment from various components.
 
-Example log outputs demonstrating successful operation are included in the logs/ directory of this repository. These logs capture critical messages during network startup, UE registration, and PDU session establishment from various components.
-
-## 8. Troubleshooting Tips
+## 7. Troubleshooting Tips
 
 Error: MySQL Exited (1)
     Cause: Schema conflict or Auth plugin mismatch.
@@ -197,17 +173,8 @@ Error: MySQL Exited (1)
 
 Error: UDR: Can't connect to MySQL (111)
     Cause: MySQL is not healthy yet.
-    Fix: Wait 60s. Restart UDR: docker restart oai-udr.
-
-Error: AMF: Authentication failed (Timeout)
-    Cause: CPU load causing DB latency >1s.
-    Fix: Increase http_request_timeout in AMF config or use nice for RAN processes.
-
-Error: UE: Registration Reject (Message too short)
-    Cause: User not found in DB.
-    Fix: Verify DB content. Re-import SQL by running down -v and restarting.
+    Fix: Wait 60s. Restart UDR and MySQL: docker restart oai-udr mysql.
 
 Error: UE: NSSAI parameters not match
     Cause: Config mismatch or UDR query fail.
-    Fix: Ensure ue.conf uses sd=0x1 (Hex) in both blocks. Check if UDR is connected to DB.
-
+    Fix: Ensure ue.conf uses sd=0x1 (Hex) in all blocks. Check if UDR is connected to DB.
