@@ -31,13 +31,15 @@ This testbed decouples the 5G Core from the Radio Access Network (RAN) and User 
   
 ## 2. Prerequisites
 
-* **Operating System**: Ubuntu 20.04 / 22.04 (Low-latency kernel recommended but not required for RFSim).
-* **Sudo Privileges**: Required for installation and managing system services.
-* **Git**: For cloning this repository and managing versions.
+**Operating System**: Ubuntu 20.04 / 22.04 (Low-latency kernel recommended but not required for RFSim).
+**Sudo Privileges**: Required for installation and managing system services.
+**Git**: For cloning this repository and managing versions.
+
     $ sudo apt update
+
     $ sudo apt install git
 
-* **Software**: Docker & Docker Compose, OpenAirInterface repository (built for gNB and UE), and oai-cn5g-fed repository (for Core Network scripts).
+**Software**: Docker & Docker Compose, OpenAirInterface repository (built for gNB and UE), and oai-cn5g-fed repository (for Core Network scripts).
 
 ## 3. Critical Configuration Changes
 
@@ -72,13 +74,16 @@ To ensure the database ingests the modified `oai_db2.sql` without primary key co
     $ docker compose -f docker-compose-slicing-basic-nrf.yaml up -d
 
 Wait approximately 15-20 seconds for the MySQL database to populate and the AMF to register with the isolated NRFs. It is important to ensure that the UDR function connected to the MySQL database:
+
     $ docker logs oai-udr | grep "MySQL"
 
 If not, restart both containers
+
     $ docker restart oai-udr mysql
 
 **3. Launch the RAN and UEs**
 Bring up strictly the UERANSIM container to generate the gNB and 8 UEs.
+
     $ docker compose -f docker-compose-slicing-ransim.yaml up -d ueransim
 
 Dynamic Slice Transitions & Testing
@@ -86,15 +91,18 @@ Dynamic Slice Transitions & Testing
 By default, UERANSIM boots all 8 UEs and requests PDU sessions strictly on Slice 1. To investigate control-plane overhead during inter-slice mobility, you can manually trigger secondary PDU sessions using the nr-cli tool.
 
 Establish a connection to Slice 2 (DNN: oai)
+
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"
 
 (Note: Watch the core logs for the T3580 timer to measure session establishment latency).
 
 Verify active sessions and multiple virtual TUN interfaces:
+
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-list"
     $ docker exec -it ueransim ifconfig
 
 Release the original Slice 1 connection:
+
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-release 1"
 
 Batch Testing:
@@ -153,6 +161,7 @@ To sequentially transition all 8 UEs to the secondary slice for load testing:
 After starting the network, verify its operation using the following methods:
 
 Monitor Core Network Logs: Observe real-time logs for UE registration, PDU session establishment, and internal NF communication. 
+
     $ docker logs oai-amf -f          # For AMF logs
     $ docker logs oai-smf-slice1 -f   # For SMF slice1 logs
     $ docker logs oai-smf-slice2 -f   # For SMF slice2 logs
