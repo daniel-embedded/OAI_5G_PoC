@@ -114,7 +114,7 @@ Once the UE log shows PDU Session Establishment Accept and an IP (e.g., 12.2.1.2
     # Ping Google DNS through the UE tunnel interface
     $ ping -I oaitun_ue1 8.8.8.8
 
-### 5. File Structure
+## 5. File Structure
 
 ├── README.md                          # This file
 
@@ -166,7 +166,7 @@ Once the UE log shows PDU Session Establishment Accept and an IP (e.g., 12.2.1.2
     
     └── ip_a.log                         # Example ip a output
 
-### 6. Verification
+## 6. Verification
 
 After starting the network, verify its operation using the following methods:
 
@@ -185,11 +185,11 @@ Check gNB and UE Logs: Verify gNB's NG Setup success and UE's successful registr
     $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-softmodem -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/gnb.sa.band78.fr1.106PRB.pci0.rfsim.conf --rfsim
     $ sudo nice -n -10 ./cmake_targets/ran_build/build/nr-uesoftmodem -O $PWD/targets/PROJECTS/GENERIC-NR-5GC/CONF/ue.conf -C 3619200000 --band 78 --rfsim
 
-### 7. Logs
+## 7. Logs
 
 Example log outputs demonstrating successful operation are included in the logs/ directory of this repository. These logs capture critical messages during network startup, UE registration, and PDU session establishment from various components.
 
-### 8. Troubleshooting Tips
+## 8. Troubleshooting Tips
 
 Error: MySQL Exited (1)
     Cause: Schema conflict or Auth plugin mismatch.
