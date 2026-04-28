@@ -1,3 +1,5 @@
+############# Common configuration
+
 mcc: '208'
 mnc: '95'
 nci: '0x000000010'
