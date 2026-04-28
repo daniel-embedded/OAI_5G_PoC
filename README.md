@@ -150,6 +150,7 @@ Establish a connection to Slice 2 (DNN: oai)
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"
 
 Establish a connection to Slice 1 (DNN: default)
+
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 1 --sd 000001 --dnn default"
 
 (Note: Watch the core logs for the T3580 timer to measure session establishment latency).
