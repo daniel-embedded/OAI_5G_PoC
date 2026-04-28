@@ -1,51 +1,103 @@
-~/oai-cn5g-fed/docker-compose$ docker logs mysql
-2026-04-01 10:19:29-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
-2026-04-01 10:19:29-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
-2026-04-01 10:19:29-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
-2026-04-01 10:19:29-03:00 [Note] [Entrypoint]: Initializing database files
-2026-04-01T13:19:29.566404Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
-2026-04-01T13:19:29.567069Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 9.0.1) initializing of server in progress as process 78
-2026-04-01T13:19:29.570329Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-01T13:19:29.679847Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-01T13:19:30.357202Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
-2026-04-01T13:19:31.567871Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
-2026-04-01 10:19:31-03:00 [Note] [Entrypoint]: Database files initialized
-2026-04-01 10:19:31-03:00 [Note] [Entrypoint]: Starting temporary server
-2026-04-01T13:19:31.605844Z 0 [System] [MY-015015] [Server] MySQL Server - start.
-2026-04-01T13:19:31.781514Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 134
-2026-04-01T13:19:31.797153Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-01T13:19:31.919866Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-01T13:19:32.067227Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
-2026-04-01T13:19:32.067237Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-2026-04-01T13:19:32.068972Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
-2026-04-01T13:19:32.079412Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
-2026-04-01T13:19:32.079553Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
-2026-04-01 10:19:32-03:00 [Note] [Entrypoint]: Temporary server started.
-'/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+~/oai-cn5g-fed/docker-compose$ docker logs mysql | head -n 200
+2026-04-28T11:42:13.316390Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+2026-04-28T11:42:13.317156Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 9.0.1) initializing of server in progress as process 80
+2026-04-28T11:42:13.321532Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:13.445379Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:14.269105Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+2026-04-28T11:42:16.073455Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
+2026-04-28T11:42:16.126138Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-04-28T11:42:16.313149Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 136
+2026-04-28T11:42:16.322687Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:16.449681Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:16.545812Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-04-28T11:42:16.545824Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-04-28T11:42:16.547795Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-04-28T11:42:16.557678Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
+2026-04-28T11:42:16.557753Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
 Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
 Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.
 Warning: Unable to load '/usr/share/zoneinfo/leapseconds' as time zone. Skipping it.
 Warning: Unable to load '/usr/share/zoneinfo/tzdata.zi' as time zone. Skipping it.
 Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
 Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
-2026-04-01 10:19:32-03:00 [Note] [Entrypoint]: Creating database oai_db
-2026-04-01 10:19:32-03:00 [Note] [Entrypoint]: Creating user test
-2026-04-01 10:19:32-03:00 [Note] [Entrypoint]: Giving user test access to schema oai_db
-
-2026-04-01 10:19:32-03:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/oai_db.sql
-ERROR 1064 (42000) at line 321: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--INSERT INTO `SessionManagementSubscriptionData` (`ueid`, `servingPlmnid`, `sin' at line 1
-2026-04-01 10:19:57-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
-2026-04-01 10:19:58-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
-2026-04-01 10:19:58-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+ERROR 1091 (42000) at line 454: Can't DROP 'PRIMARY'; check that column/key exists
+2026-04-28T11:42:21.360070Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-04-28T11:42:21.542060Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 1
+2026-04-28T11:42:21.553131Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:21.966589Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:22.021838Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-04-28T11:42:22.026463Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-04-28T11:42:22.098320Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-04-28T11:42:22.098332Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-04-28T11:42:22.100476Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-04-28T11:42:22.110314Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+2026-04-28T11:42:22.110408Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2026-04-28 08:42:12-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Initializing database files
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Database files initialized
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Starting temporary server
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Temporary server started.
 '/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
-2026-04-01T13:19:58.244281Z 0 [System] [MY-015015] [Server] MySQL Server - start.
-2026-04-01T13:19:58.421075Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 1
-2026-04-01T13:19:58.432008Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
-2026-04-01T13:19:58.848653Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
-2026-04-01T13:19:58.903758Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
-2026-04-01T13:19:58.908579Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
-2026-04-01T13:19:58.978824Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
-2026-04-01T13:19:58.978834Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
-2026-04-01T13:19:58.980654Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
-2026-04-01T13:19:58.988516Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
-2026-04-01T13:19:58.988697Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Creating database oai_db
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Creating user test
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Giving user test access to schema oai_db
+
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/oai_db.sql
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+'/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+
+~/oai-cn5g-fed/docker-compose$ docker logs mysql | tail -n 200
+2026-04-28T11:42:13.316390Z 0 [System] [MY-015017] [Server] MySQL Server Initialization - start.
+2026-04-28T11:42:13.317156Z 0 [System] [MY-013169] [Server] /usr/sbin/mysqld (mysqld 9.0.1) initializing of server in progress as process 80
+2026-04-28T11:42:13.321532Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:13.445379Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:14.269105Z 6 [Warning] [MY-010453] [Server] root@localhost is created with an empty password ! Please consider switching off the --initialize-insecure option.
+2026-04-28T11:42:16.073455Z 0 [System] [MY-015018] [Server] MySQL Server Initialization - end.
+2026-04-28T11:42:16.126138Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-04-28T11:42:16.313149Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 136
+2026-04-28T11:42:16.322687Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:16.449681Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:16.545812Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-04-28T11:42:16.545824Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-04-28T11:42:16.547795Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-04-28T11:42:16.557678Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 0  MySQL Community Server - GPL.
+2026-04-28T11:42:16.557753Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Socket: /var/run/mysqld/mysqlx.sock
+Warning: Unable to load '/usr/share/zoneinfo/iso3166.tab' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/leap-seconds.list' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/leapseconds' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/tzdata.zi' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/zone.tab' as time zone. Skipping it.
+Warning: Unable to load '/usr/share/zoneinfo/zone1970.tab' as time zone. Skipping it.
+ERROR 1091 (42000) at line 454: Can't DROP 'PRIMARY'; check that column/key exists
+2026-04-28T11:42:21.360070Z 0 [System] [MY-015015] [Server] MySQL Server - start.
+2026-04-28T11:42:21.542060Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 9.0.1) starting as process 1
+2026-04-28T11:42:21.553131Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-04-28T11:42:21.966589Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-04-28T11:42:22.021838Z 0 [System] [MY-010229] [Server] Starting XA crash recovery...
+2026-04-28T11:42:22.026463Z 0 [System] [MY-010232] [Server] XA crash recovery finished.
+2026-04-28T11:42:22.098320Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-04-28T11:42:22.098332Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-04-28T11:42:22.100476Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-04-28T11:42:22.110314Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '9.0.1'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+2026-04-28T11:42:22.110408Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2026-04-28 08:42:12-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:13-03:00 [Note] [Entrypoint]: Initializing database files
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Database files initialized
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Starting temporary server
+2026-04-28 08:42:16-03:00 [Note] [Entrypoint]: Temporary server started.
+'/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Creating database oai_db
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Creating user test
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: Giving user test access to schema oai_db
+
+2026-04-28 08:42:17-03:00 [Note] [Entrypoint]: /usr/local/bin/docker-entrypoint.sh: running /docker-entrypoint-initdb.d/oai_db.sql
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2026-04-28 08:42:21-03:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 9.0.1-1.el9 started.
+'/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'

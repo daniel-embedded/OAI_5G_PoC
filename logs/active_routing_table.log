@@ -1,0 +1,7 @@
+~/oai-cn5g-fed/docker-compose$ docker exec -it oai-ext-dn ip route
+default via 192.168.70.1 dev eth0 
+12.1.1.0/24 via 192.168.70.142 dev eth0 
+12.2.1.0/24 via 192.168.70.143 dev eth0 
+12.3.1.0/24 via 192.168.70.144 dev eth0 
+192.168.70.0/24 dev eth0 proto kernel scope link src 192.168.70.145 
+192.168.73.0/24 dev eth1 proto kernel scope link src 192.168.73.145

@@ -1,0 +1,25 @@
+mcc: '208'
+mnc: '95'
+nci: '0x000000010'
+idLength: 32
+tac: 40960
+linkIp: 192.168.70.152
+ngapIp: 192.168.70.152
+gtpIp: 192.168.70.152
+
+# The critical block for AMF Re-allocation
+amfConfigs:
+  - address: 192.168.70.138  # Gatekeeper AMF
+    port: 38412
+  - address: 192.168.70.147  # Target AMF
+    port: 38412
+
+slices:
+  - sst: 222
+    sd: 1
+  - sst: 1
+    sd: 1
+  - sst: 2
+    sd: 2
+
+ignoreStreamIds: true

@@ -3,7 +3,14 @@ info:
   version: 1.4.0
   description: OAI-NSSF Release v1.4.0
 configuration:
-  nsiInfoList:
+  nsiInfoList: #Network Slice Instance - links a slice to the correct NRF
+    - snssai:
+        sst: 222
+        sd: '000001'
+      nsiInformationList:
+        nrfId: http://192.168.70.136:8080/nnrf-disc/v1/nf-instances
+        nsiId: '13'
+        nrfNfMgtUri: http://192.168.70.136:8080/nnrf-nfm/v1/nf-instances
     - snssai:
         sst: 1
         sd: '000001'
@@ -15,17 +22,19 @@ configuration:
         sst: 2
         sd: '000002'
       nsiInformationList:
-        nrfId: http://192.168.70.146:8080/nnrf-disc/v1/nf-instances
+#        nrfId: http://192.168.70.146:8080/nnrf-disc/v1/nf-instances
+        nrfId: http://192.168.70.136:8080/nnrf-disc/v1/nf-instances
         nsiId: '12'
-        nrfNfMgtUri: http://192.168.70.146:8080/nnrf-nfm/v1/nf-instances
-    - snssai:
-        sst: 3
-        sd: '000003'
-      nsiInformationList:
-        nrfId: http://192.168.70.137:8080/nnrf-disc/v1/nf-instances
-        nsiId: '13'
-        nrfNfMgtUri: http://192.168.70.137:8080/nnrf-nfm/v1/nf-instances
-    - snssai:
+#        nrfNfMgtUri: http://192.168.70.146:8080/nnrf-nfm/v1/nf-instances
+        nrfNfMgtUri: http://192.168.70.136:8080/nnrf-nfm/v1/nf-instances
+#    - snssai:
+#        sst: 3
+#        sd: '000003'
+#      nsiInformationList:
+#        nrfId: http://192.168.70.137:8080/nnrf-disc/v1/nf-instances
+#        nsiId: '13'
+#        nrfNfMgtUri: http://192.168.70.137:8080/nnrf-nfm/v1/nf-instances
+#    - snssai:
 #        sst: 4
 #        sd: '000004'
 #      nsiInformationList:
@@ -58,80 +67,109 @@ configuration:
 #        nrfId: http://oai-cn5g-nrf-20.fr:8080/nnrf-disc/v1/nf-instances
 #        nsiId: '20'
 #        nrfNfMgtUri: http://oai-cn5g-nrf-20.fr:8080/nnrf-nfm/v1/nf-instances    
-  taInfoList:
+  taInfoList: # Tracking Area Info - defines the physical geography of the network
     - tai:
         plmnId:
           mcc: '208'
           mnc: '95'
-        tac: '33456'
+#        tac: '33456'
+        tac: 40960
       supportedSnssaiList:
+      - sst: 222
+        sd: '000001'
       - sst: 1
         sd: '000001'
       - sst: 2
         sd: '000002'
-      - sst: 3
-        sd: '000003'
-  amfInfoList:
-    - targetAmfSet: oai5gcn.mcc208.mnc95.regionid128.setid1.3gppnetwork.org
-      nrfAmfSet: http://oai-cn5g-nrf.fr:8080/nnrf-disc/v1/nf-instances
-      nrfAmfSetNfMgtUri: http://oai-cn5g-nrf.fr:8080/nnrf-nfm/v1/nf-instances
+#      - sst: 3
+#        sd: '000003'
+  amfInfoList: # AMF Sets and Instances - in 5G, AMFs are grouped into "Sets" for redundancy and load balancing
+    - targetAmfSet: oai5gcn.mcc208.mnc95.regionid1.setid1.3gppnetwork.org # The overarching group (e.g., setid1)
+      nrfAmfSet: http://192.168.70.136:8080/nnrf-disc/v1/nf-instances
+      nrfAmfSetNfMgtUri: http://192.168.70.136:8080/nnrf-nfm/v1/nf-instances
       amfList:
-        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd58
+#        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd58 # individual Docker containers (AMF instances) running inside that Set, identified by their unique UUIDs
+#        - nfId: faea2892-875b-4f6f-9b1c-863515427c69
           supportedNssaiAvailabilityData:
               tai:
                 plmnId:
                   mcc: 208
                   mnc: 95
-                tac: 33456
+#                tac: 33456
+                tac: 40960
               supportedSnssaiList:
-                - sst: 1
+                - sst: 222
                   sd: "000001"
-                - sst: 2
-                  sd: "000002"
-                - sst: 3
-                  sd: "000003"
-        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd68
-          supportedNssaiAvailabilityData:
-              tai:
-                plmnId:
-                  mcc: 208
-                  mnc: 95
-                tac: 33457
-              supportedSnssaiList:
-                - sst: 1
-                  sd: "000001"
-                - sst: 2
-                  sd: "000002"
-                - sst: 3
-                  sd: "000003"
-              taiList:
-                - tai:
-                    plmnId:
-                      mcc: 208
-                      mnc: 95
-                    tac: 33458
-                  supportedSnssaiList:
-                    - sst: 1
-                      sd: "000001"
-                    - sst: 2
-                      sd: "000002"
-                    - sst: 3
-                      sd: "000003"
-    - targetAmfSet: oai5gcn.mcc208.mnc95.regionid128.setid2.3gppnetwork.org
-      nrfAmfSet: http://oai-cn5g-nrf.fr:8080/nnrf-disc/v1/nf-instances
-      nrfAmfSetNfMgtUri: http://oai-cn5g-nrf.fr:8080/nnrf-nfm/v1/nf-instances
+#                - sst: 1
+#                  sd: "000001"
+#                - sst: 2
+#                  sd: "000002"
+#                - sst: 3
+#                  sd: "000003"
+#        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd68
+#        - nfId: 6dd6cada-2447-4132-bf7b-670248d6a3b1
+#          supportedNssaiAvailabilityData:
+#              tai:
+#                plmnId:
+#                  mcc: 208
+#                  mnc: 95
+#                tac: 33457
+#                tac: 33456
+#                tac: 40960
+#              supportedSnssaiList:
+#                - sst: 222
+#                  sd: "000001"
+#                - sst: 1
+#                  sd: "000001"
+#                - sst: 2
+#                  sd: "000002"
+#                - sst: 3
+#                  sd: "000003"
+#              taiList:
+#                - tai:
+#                    plmnId:
+#                      mcc: 208
+#                      mnc: 95
+#                    tac: 33458
+#                  supportedSnssaiList:
+#                    - sst: 1
+#                      sd: "000001"
+#                    - sst: 2
+#                      sd: "000002"
+#                    - sst: 3
+#                      sd: "000003"
+    - targetAmfSet: oai5gcn.mcc208.mnc95.regionid1.setid2.3gppnetwork.org
+      nrfAmfSet: http://192.168.70.136:8080/nnrf-disc/v1/nf-instances
+      nrfAmfSetNfMgtUri: http://192.168.70.136:8080/nnrf-nfm/v1/nf-instances
       amfList:
-        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd78
+#        - nfId: 405e8251-cc5a-45dd-a494-efb9eaf1cd78
+#        - nfId: 8fad74a4-f6e8-4eab-b790-e33a0e61980f
+#          supportedNssaiAvailabilityData:
+#              tai:
+#                plmnId:
+#                  mcc: 208
+#                  mnc: 95
+#                tac: 33460
+#              supportedSnssaiList:
+#                - sst: 1
+#                  sd: "000001"
+#                - sst: 2
+#                  sd: "000002"
+#                - sst: 3
+#                  sd: "000003"
+#        - nfId: 6dd6cada-2447-4132-bf7b-670248d6a3b1
           supportedNssaiAvailabilityData:
               tai:
                 plmnId:
                   mcc: 208
                   mnc: 95
-                tac: 33460
+#                tac: 33457
+#                tac: 33456
+                tac: 40960
               supportedSnssaiList:
+#                - sst: 222
+#                  sd: "000001"
                 - sst: 1
                   sd: "000001"
                 - sst: 2
                   sd: "000002"
-                - sst: 3
-                  sd: "000003"

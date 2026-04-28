@@ -58,7 +58,7 @@ nrf_server:
 ############## SBI Interfaces
 nfs:
   smf:
-    host: oai-smf-slice2
+    host: oai-smf-slice222
     sbi:
       port: 8080
       api_version: v1
@@ -67,14 +67,14 @@ nfs:
       interface_name: eth0
       port: 8805
   nrf:
-#    host: oai-nrf-slice2
+#    host: oai-nrf-slice222
     host: oai-nrf
     sbi:
       port: 8080
       api_version: v1
       interface_name: eth0
   upf:
-    host: oai-upf-slice2
+    host: oai-upf-slice222
     sbi:
       port: 8080
       api_version: v1
@@ -99,9 +99,9 @@ nfs:
       
 # anchor is set to re-use slice config in SMF
 snssais:
-  - &slice2
-    sst: 2
-    sd: 000002 # in hex
+  - &slice222
+    sst: 222
+    sd: 000001 # in hex
 
 smf:
   support_features:
@@ -114,15 +114,15 @@ smf:
   # follows the SmfInfo datatype from 3GPP TS 29.510
   smf_info:
     sNssaiSmfInfoList:
-      - sNssai: *slice2
+      - sNssai: *slice222
         dnnSmfInfoList:
-          - dnn: "oai"
+          - dnn: "gatekeeper"
   up_ip_pool:
     ipv4:
-      network: "12.2.1.0/24"  # Subnet for Slice 2
+      network: "12.3.1.0/24"  # Subnet for Slice 222
   local_subscription_infos:
-    - single_nssai: *slice2
-      dnn: "oai"
+    - single_nssai: *slice222
+      dnn: "gatekeeper"
       qos_profile:
         5qi: 5
         session_ambr_ul: "20Mbps"
@@ -135,13 +135,13 @@ upf:
   remote_n6_gw: localhost      # Dummy host since simple-switch does not use N6 GW
   upf_info:
     sNssaiUpfInfoList:
-      - sNssai: *slice2
+      - sNssai: *slice222
         dnnUpfInfoList:
-          - dnn: "oai"
+          - dnn: "gatekeeper"
 
 ## DNN configuration
 dnns:
-  - dnn: "oai"
+  - dnn: "gatekeeper"
     pdu_session_type: "IPV4"
-    ipv4_subnet: "12.2.1.0/24"
-#    ipv4_subnet: "12.1.1.128/25"
+    ipv4_subnet: "12.3.1.0/24"
+#    ipv4_subnet: "12.1.1.0/25"

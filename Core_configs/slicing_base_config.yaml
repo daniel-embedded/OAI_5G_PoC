@@ -34,16 +34,38 @@ register_nf:
   general: yes
 
 http_version: 2
+#http_version: 1
+
+############## NRF Configuration
+nrf:
+  # Primary NRF (slice1)
+  - ipv4_address: 192.168.70.136
+    port: 8080
+#    port: 80
+    api_version: v1
+    register_nrf: yes
+#  # Secondary NRF (slice2)  
+#  - ipv4_address: 192.168.70.146
+#    port: 8080
+#    api_version: v1
+#    register_nrf: yes
 
 ############## SBI Interfaces
 ### Each NF takes its local SBI interfaces and remote interfaces from here, unless it gets them using NRF discovery mechanisms
 nfs:
+  nrf:
+    host: oai-nrf
+    sbi:
+      port: 8080
+      api_version: v1
+      interface_name: eth0
   amf:
     host: oai-amf
     sbi:
       port: 8080
       api_version: v1
       interface_name: eth0
+      transport_protocol: ""
     n2:
       interface_name: eth0
       port: 38412
@@ -59,6 +81,19 @@ nfs:
       port: 8080
       api_version: v1
       interface_name: eth0
+    udr_info:
+      supi_ranges:
+        - start: "208950000000031"
+          end: "208950000000131"
+#          end: "208950000000038"
+          pattern: "^imsi-20895[0-9]{8}$"
+    s_nssais:
+      - sst: 222
+        sd: "000001"
+#      - sst: 1
+#        sd: "000001"
+#      - sst: 2
+#        sd: "000002"
   ausf:
     host: oai-ausf
     sbi:
@@ -92,6 +127,7 @@ amf:
                                # There's no NRF in this scenario, SMF info is taken from "nfs" section.
     enable_nssf: yes
     enable_smf_selection: yes
+    enable_nf_registration: yes
   relative_capacity: 30
   statistics_timer_interval: 20  # in seconds
   emergency_support: false
@@ -101,25 +137,24 @@ amf:
       amf_region_id: 01
       amf_set_id: 001
       amf_pointer: 01
-    - mcc: 001
-      mnc: 01
-      amf_region_id: 01
-      amf_set_id: 001
-      amf_pointer: 01
+#   - mcc: 001
+#     mnc: 01
+#     amf_region_id: 01
+#     amf_set_id: 001
+#     amf_pointer: 01
   plmn_support_list:
     - mcc: 208
       mnc: 95
       tac: 0xa000
       nssai:
-        - sst: 5
-        - sst: 1
+        - sst: 222
           sd: 000001 # in hex
-        - sst: 2
-          sd: 000002 # in hex
-        - sst: 3
-          sd: 000003 # in hex
-        - sst: 4
-          sd: 000004 # in hex
+#        - sst: 1
+#          sd: 000001 # in hex
+#        - sst: 2
+#          sd: 000002 # in hex
+#        - sst: 3
+#          sd: 000003 # in hex
   supported_integrity_algorithms:
     - "NIA1"
     - "NIA2"
@@ -128,3 +163,18 @@ amf:
     - "NEA2"
 nssf:
   slice_config_path: /openair-nssf/etc/nssf_slice_config.yaml
+
+#udr:
+#  udr_info:
+#    supi_ranges:
+#      - start: "208950000000031"
+#        end: "208950000000131"
+#        end: "208950000000038"
+#        pattern: "^imsi-20895[0-9]{8}$"
+
+udr:
+  supi_ranges:
+    - start: "208950000000031"
+      end: "208950000000131"
+#      end: "208950000000038"
+      pattern: "^imsi-20895[0-9]{8}$"
