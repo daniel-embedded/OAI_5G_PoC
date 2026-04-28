@@ -245,15 +245,19 @@ It is necessary to verify that the MySQL DataBase is healthy and then confirm th
 For Control Plane Verification (Logging), diagnostic commands, and testing methodologies, validate this architecture checking the NF logs is the fastest way to verify SBI registrations and control plane signaling.
 
 Check NSSF to NRF Registration:
+
     $ docker logs oai-nssf | grep -i "nrf"
 
 Monitor AMF Slice Selection Queries (NSSF Handshake):
+
     $ docker logs oai-amf | grep -E "NSSF|nsselection"
 
 Verify SMF Connections (NRF and UDM):
+
     $ docker logs oai-smf-slice222 | grep -E "success|nrf|Nrf|NRF|UDM|response"
 
 Monitor UE Attachment Status (gNB/UE perspective):
+
     $ docker logs ueransim | tail -n 100
 
 **3. User Plane triggering**
@@ -261,10 +265,12 @@ Monitor UE Attachment Status (gNB/UE perspective):
 When you need to force specific UEs to request distinct slices (S-NSSAI) without relying on default startup parameters.
 
 Trigger a specific PDU Session manually via CLI:
+
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 1 --sd 000001 --dnn default"
     $ docker exec -it ueransim ./nr-cli imsi-208950000000031 -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"
 
 Trigger multiple sessions in bulk (Bash Loop):
+
     $ for i in {31..38}; do docker exec -it ueransim ./nr-cli imsi-2089500000000$i -e "ps-establish IPv4 --sst 2 --sd 000002 --dnn oai"; done
 
 **4. Routing and connectivity**
@@ -272,14 +278,17 @@ Trigger multiple sessions in bulk (Bash Loop):
 Verifying that the external data network (ext-dn) knows how to route the return traffic to the correct UPF container based on the UE's subnet.
 
 View active routing table in the Ext-DN gateway:
+
     $ docker exec -it oai-ext-dn ip route
 
 Inject static return routes manually (if missed by Docker Compose):
+
     $ docker exec -it oai-ext-dn ip route add 12.1.1.0/24 via 192.168.70.142
     $ docker exec -it oai-ext-dn ip route add 12.2.1.0/24 via 192.168.70.143
     $ docker exec -it oai-ext-dn ip route add 12.3.1.0/24 via 192.168.70.144
 
 Test external connectivity from a specific UE interface(Must be run from inside the UERANSIM container):
+
     $ docker exec -it ueransim ping -I uesimtun0 8.8.8.8
 
 **5. Deep packet inspection**
@@ -287,13 +296,16 @@ Test external connectivity from a specific UE interface(Must be run from inside 
 Inspecting the actual packets guarantees that routing isolation and JSON signaling are behaving exactly as expected.
 
 Install tcpdump dynamically on a stripped OAI container (e.g., UPF):
+
     $ docker exec -u root -it oai-upf-slice222 apt-get update
     $ docker exec -u root -it oai-upf-slice222 apt-get install -y tcpdump
 
 Verify User Plane isolation (listen for ICMP traffic on a specific UPF):
+
     $ docker exec -it oai-upf-slice222 tcpdump -i eth0 icmp
 
 Verify Control Plane signaling (read the JSON HTTP/2 payload between AMF and NSSF):
+
     $ docker exec -it oai-amf tcpdump -i eth0 host oai-nssf -A
 
 This toolkit covers the entire lifecycle of troubleshooting a containerized 5G core—from initial NF discovery down to the ICMP packets on the user plane. It is a highly robust methodology that will serve you well when you eventually move on to benchmarking network performance.
